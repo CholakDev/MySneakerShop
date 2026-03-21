@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FootFlex Mini App Store</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background-color: var(--tg-theme-bg-color); color: var(--tg-theme-text-color); }
+        .product { border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin-bottom: 20px; }
+        .product-title { font-weight: bold; font-size: 18px; margin-bottom: 5px; }
+        .product-price { color: #888; margin-bottom: 10px; }
+        .size-buttons { display: flex; gap: 5px; margin-bottom: 15px; }
+        .size-btn { border: 1px solid var(--tg-theme-button-color); padding: 5px 10px; border-radius: 5px; cursor: pointer; color: var(--tg-theme-button-color); background: none; }
+        .size-btn.selected { background-color: var(--tg-theme-button-color); color: var(--tg-theme-button-text-color); }
+        .buy-btn { width: 100%; padding: 12px; background-color: var(--tg-theme-button-color); color: var(--tg-theme-button-text-color); border: none; border-radius: 5px; cursor: pointer; font-size: 16px; }
+    </style>
+</head>
+<body>
+
+<h1>Каталог Обуви</h1>
+
+<div class="product" id="product1">
+    <div class="product-title">Street Ace Blue</div>
+    <div class="product-price">$120.00</div>
+    <div class="size-buttons">
+        <button class="size-btn" data-size="8">8</button>
+        <button class="size-btn" data-size="9">9</button>
+        <button class="size-btn" data-size="10">10</button>
+    </div>
+    <button class="buy-btn" onclick="buyItem('Street Ace Blue', 'product1')">Купить</button>
+</div>
+
+<div class="product" id="product2">
+    <div class="product-title">Swift Run Grey</div>
+    <div class="product-price">$99.99</div>
+    <div class="size-buttons">
+        <button class="size-btn" data-size="8">8</button>
+        <button class="size-btn" data-size="9">9</button>
+        <button class="size-btn" data-size="10">10</button>
+    </div>
+    <button class="buy-btn" onclick="buyItem('Swift Run Grey', 'product2')">Купить</button>
+</div>
+
+<script>
+    let tg = window.Telegram.WebApp;
+    tg.expand(); // Раскрываем приложение на весь экран
+
+    // Логика выбора размера
+    const sizeButtons = document.querySelectorAll('.size-btn');
+    sizeButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            // Убираем выделение у всех кнопок в этой группе
+            const siblingButtons = btn.parentNode.querySelectorAll('.size-btn');
+            siblingButtons.forEach(sBtn => sBtn.classList.remove('selected'));
+            // Выделяем текущую кнопку
+            btn.classList.add('selected');
+        });
+    });
+
+    // Функция покупки
+    function buyItem(itemName, productId) {
+        // Находим выбранный размер для этого товара
+        const selectedSizeBtn = document.querySelector(`#${productId} .size-btn.selected`);
+        
+        if (!selectedSizeBtn) {
+            tg.showAlert("Пожалуйста, выберите размер!");
+            return;
+        }
+
+        const selectedSize = selectedSizeBtn.getAttribute('data-size');
+        const orderData = {
+            item: itemName,
+            size: selectedSize
+        };
+
+        // Тот самый магический метод: отправляем данные боту
+        // ОНИ ДОЛЖНЫ БЫТЬ СТРОКОЙ
+        tg.sendData(JSON.stringify(orderData)); 
+        
+        // Telegram автоматически закроет Mini App после отправки
+    }
+</script>
+
+</body>
+</html>
