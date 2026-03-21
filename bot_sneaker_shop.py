@@ -5,7 +5,7 @@ import json
 # Вставьте ваш токен бота здесь
 BOT_TOKEN = "8643343159:AAHNdJ_QEMQYjX63umN1lcQweHTxrs7N1aM"
 # Ссылка на ваше Mini App (обязательно HTTPS)
-WEBAPP_URL = "https://ваша-ссылка.ru/sneaker_shop.html"
+WEBAPP_URL = "https://cholakdev.github.io/MySneakerShop/index.html"
 
 # Функция для команды /start
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
