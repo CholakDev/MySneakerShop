@@ -186,6 +186,40 @@
         tg.onEvent('mainButtonClicked', function(){
             tg.sendData(JSON.stringify(selectedData));
         });
+
+        // 1. Ссылка на ваш список товаров (JSON на GitHub или другом сервере)
+const DATA_URL = "https://your-username.github.io/MySneakerShop/products.json";
+
+// 2. Функция, которая загружает товары
+async function loadProducts() {
+    const response = await fetch(DATA_URL);
+    const products = await response.json();
+    
+    const container = document.getElementById('products-container');
+    container.innerHTML = ''; // Очищаем старое
+
+    products.forEach(p => {
+        // Если товара нет в наличии, мы его либо не показываем, либо пишем "Нет в наличии"
+        if (p.available) {
+            container.innerHTML += `
+                <div class="product-card">
+                    <img src="${p.image}">
+                    <h3>${p.name}</h3>
+                    <p>${p.price}$</p>
+                    <button onclick="buy('${p.name}')">Заказать</button>
+                </div>
+            `;
+        }
+    });
+
+    // 3. Проверка на Админа
+    let tg = window.Telegram.WebApp;
+    if (tg.initDataUnsafe.user.id === 7738003736) { // Ваш ID
+        document.getElementById('admin-panel').style.display = 'block';
+    }
+}
+
+loadProducts();
     </script>
 </body>
 </html>
