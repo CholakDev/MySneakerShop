@@ -52,3 +52,18 @@ if __name__ == '__main__':
     
     # Запускаем бота
     application.run_polling()
+
+# Добавьте ваш ID (можно узнать у бота @userinfobot)
+ADMIN_ID = 632828797 
+
+async def handle_webapp_data(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    webapp_data = update.effective_message.web_app_data.data
+    data = json.loads(webapp_data)
+    
+    msg = f"🛍 НОВЫЙ ЗАКАЗ!\nТовар: {data['item']}\nРазмер: {data['size']}\nОт: @{update.effective_user.username}"
+    
+    # Отправляем подтверждение клиенту
+    await update.message.reply_text("Ваш заказ принят!")
+    
+    # Отправляем уведомление ВАМ (админу)
+    await context.bot.send_message(chat_id=ADMIN_ID, text=msg)
