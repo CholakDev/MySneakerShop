@@ -2,224 +2,319 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sneaker World Premium</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Satoshi DCA - Твой Биткоин-Помощник</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
+        /* БАЗОВЫЕ СТИЛИ (ТЕМНАЯ ТЕМА) */
         :root {
-            --tg-bg: var(--tg-theme-bg-color, #ffffff);
-            --tg-text: var(--tg-theme-text-color, #000000);
-            --tg-hint: var(--tg-theme-hint-color, #707579);
-            --tg-link: var(--tg-theme-link-color, #3390ec);
-            --tg-sec-bg: var(--tg-theme-secondary-bg-color, #f4f4f5);
+            --bg-color: #171a1f; /* Чуть темнее, более "криптовый" */
+            --card-bg: #22262e;
+            --text-main: #ffffff;
+            --text-secondary: #8a94a1;
+            --btc-orange: #f7931a;
+            --green: #2ecc71;
+            --red: #e74c3c;
+            --border-color: #313a46;
         }
 
         body {
-            background-color: var(--tg-sec-bg);
-            color: var(--tg-text);
-            font-family: sans-serif;
-            padding-bottom: 100px; /* Чтобы нижние товары не перекрывались кнопкой */
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            /* Разрешаем скролл по вертикали */
+            overflow-y: scroll; 
         }
 
-        /* Большой красивый баннер сверху */
-        .hero-banner {
-            background: linear-gradient(135deg, #3390ec, #1c64b3);
-            color: white;
-            padding: 40px 20px;
+        /* Главный контейнер */
+        .app-container {
+            width: 100%;
+            max-width: 420px; /* Размер типичного телефона */
+            padding: 20px 15px 100px 15px; /* Отступ снизу для кнопок */
+            box-sizing: border-box;
+        }
+
+        /* ОБЩИЕ СТИЛИ ДЛЯ БЛОКОВ (КАРТОЧКИ) */
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .card-title {
+            font-size: 14px;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            margin-top: 0;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* 1. БЛОК: HEADER & PRICE */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .app-logo { font-size: 22px; font-weight: bold; color: var(--btc-orange); display: flex; align-items: center; gap: 8px; }
+        .btc-price { font-size: 16px; color: var(--text-secondary); }
+        .price-up { color: var(--green); }
+
+        /* 2. БЛОК: РАСШИРЕННЫЙ ДАШБОРД */
+        .portfolio-summary {
             text-align: center;
-            border-radius: 0 0 20px 20px;
-            margin-bottom: 25px;
-        }
-
-        .section-title {
-            padding: 0 15px;
             margin-bottom: 15px;
-            font-weight: bold;
-            font-size: 1.2rem;
+        }
+        .total-btc { font-size: 32px; font-weight: bold; margin-bottom: 5px; }
+        .total-usdt { font-size: 16px; color: var(--text-secondary); }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .stat-item {
+            background: rgba(255,255,255,0.03);
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+        .stat-val { font-size: 18px; font-weight: bold; }
+        .stat-lab { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
+        .profit { color: var(--green); }
+
+        /* Псевдо-график (визуал) */
+        .pseudo-chart {
+            height: 80px;
+            background: linear-gradient(0deg, rgba(247,147,26,0) 0%, rgba(247,147,26,0.1) 100%);
+            border-bottom: 2px solid var(--btc-orange);
+            border-radius: 8px 8px 0 0;
+            margin-top: 15px;
+            position: relative;
+        }
+        .chart-point {
+            width: 8px; height: 8px; background: var(--btc-orange); border-radius: 50%;
+            position: absolute; bottom: 20px; right: 20px;
+            box-shadow: 0 0 10px var(--btc-orange);
         }
 
-        .product-card {
-            background: var(--tg-bg);
-            border-radius: 15px;
-            border: none;
-            overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-            margin-bottom: 15px;
-            transition: transform 0.1s;
+        /* 3. БЛОК: НАСТРОЙКИ DCA */
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 6px; font-size: 14px; color: var(--text-secondary); }
+        input, select {
+            width: 100%; padding: 14px; background-color: var(--bg-color);
+            border: 1px solid var(--border-color); border-radius: 10px; color: var(--text-main); font-size: 16px;
+            box-sizing: border-box; transition: 0.2s;
         }
-
-        .product-card:active { transform: scale(0.97); }
-
-        .img-container {
-            width: 100%;
-            height: 160px;
-            background: #eee;
-        }
-
-        .img-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .card-content { padding: 12px; }
-        .price { font-weight: bold; color: var(--tg-link); font-size: 1.1rem; }
+        input:focus, select:focus { outline: none; border-color: var(--btc-orange); box-shadow: 0 0 5px rgba(247,147,26,0.3); }
         
-        .size-badge {
-            display: inline-block;
-            padding: 4px 10px;
-            background: var(--tg-sec-bg);
-            border-radius: 8px;
-            margin: 2px;
-            font-size: 0.85rem;
-            cursor: pointer;
-            border: 1px solid transparent;
+        .plan-info { font-size: 12px; color: var(--btc-orange); background: rgba(247,147,26,0.1); padding: 10px; border-radius: 8px; margin-top: 10px; text-align: center;}
+
+        /* 4. БЛОК: ИСТОРИЯ ПОКУПОК */
+        .history-list { margin: 0; padding: 0; list-style: none; }
+        .history-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px 0; border-bottom: 1px solid var(--border-color);
+        }
+        .history-item:last-child { border-bottom: none; }
+        .hist-date { font-size: 14px; color: var(--text-main); }
+        .hist-meta { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+        .hist-amount { font-size: 14px; font-weight: bold; text-align: right; }
+        .hist-btc { color: var(--btc-orange); }
+
+        /* 5. БЛОК: API КЛЮЧИ & БЕЗОПАСНОСТЬ */
+        .api-status { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; color: var(--green); background: rgba(46,204,113,0.1); padding: 4px 8px; border-radius: 20px;}
+        .status-dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; }
+        .api-key-view {
+            font-family: monospace; font-size: 12px; color: var(--text-secondary);
+            background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px;
+            margin-top: 10px; word-break: break-all; cursor: pointer;
         }
 
-        .size-badge.selected {
-            background: var(--tg-link);
-            color: white;
-            border-color: var(--tg-link);
+        /* КНОПКИ */
+        .btn {
+            width: 100%; padding: 16px; background-color: var(--btc-orange); color: #1c1c1e;
+            border: none; border-radius: 12px; font-size: 16px; font-weight: bold;
+            cursor: pointer; transition: 0.2s;
         }
+        .btn:active { background-color: #e08516; transform: scale(0.98); }
+        
+        .btn-secondary { background-color: transparent; border: 1px solid var(--border-color); color: var(--text-secondary); margin-top: 10px;}
+
+        /* ПЛАВАЮЩИЙ FOOTER (КНОПКИ ДЕЙСТВИЯ) */
+        .footer-actions {
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            background-color: var(--card-bg);
+            padding: 15px; border-top: 1px solid var(--border-color);
+            box-sizing: border-box; display: flex; gap: 10px;
+            justify-content: center; z-index: 100;
+        }
+        .footer-actions .btn { width: auto; flex-grow: 1; padding: 14px; }
+        .btn-pause { background-color: rgba(231,76,60,0.1); color: var(--red); border: 1px solid rgba(231,76,60,0.3); }
+
+        /* Всплывающее уведомление */
+        #toast {
+            visibility: hidden; min-width: 250px; background-color: var(--card-bg); color: var(--text-main);
+            text-align: center; border-radius: 10px; padding: 16px; position: fixed; z-index: 1000;
+            bottom: 90px; left: 50%; transform: translateX(-50%); border: 1px solid var(--btc-orange);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5); opacity: 0; transition: opacity 0.3s, visibility 0.3s;
+        }
+        #toast.show { visibility: visible; opacity: 1; }
+
     </style>
 </head>
 <body>
 
-    <div class="hero-banner">
-        <h1>Sneaker World</h1>
-        <p>Лучшие кроссовки сезона 2026</p>
-    </div>
-
-    <div class="section-title">🔥 Новинки</div>
+<div class="app-container">
     
-    <div class="container-fluid">
-        <div class="row g-3">
-            <div class="col-6">
-                <div class="product-card" onclick="selectProduct('Air Max 2026', 150, this)">
-                    <div class="img-container">
-                        <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400" alt="S1">
-                    </div>
-                    <div class="card-content">
-                        <div class="fw-bold">Air Max 2026</div>
-                        <div class="price">$150</div>
-                        <div class="mt-2">
-                            <span class="size-badge">41</span>
-                            <span class="size-badge">42</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-6">
-                <div class="product-card" onclick="selectProduct('Ultra Boost X', 180, this)">
-                    <div class="img-container">
-                        <img src="https://images.unsplash.com/photo-1551107696-a4b0c5a0d9a2?w=400" alt="S2">
-                    </div>
-                    <div class="card-content">
-                        <div class="fw-bold">Ultra Boost X</div>
-                        <div class="price">$180</div>
-                        <div class="mt-2">
-                            <span class="size-badge">43</span>
-                            <span class="size-badge">44</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="section-title mt-4">👟 Популярное</div>
-
-        <div class="product-card w-100" onclick="selectProduct('Jordan Retro High', 220, this)">
-            <div class="row g-0">
-                <div class="col-5">
-                    <img src="https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=400" class="img-fluid rounded-start h-100" style="object-fit: cover;">
-                </div>
-                <div class="col-7">
-                    <div class="card-content">
-                        <div class="fw-bold">Jordan Retro High</div>
-                        <div class="text-muted small">Классика вне времени. Кожа премиум-класса.</div>
-                        <div class="price mt-2">$220</div>
-                        <div class="mt-2">
-                            <span class="size-badge">40</span><span class="size-badge">41</span><span class="size-badge">42</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="section-title mt-4">🛍 Все товары</div>
-        <div class="text-center text-muted">Листайте вниз, чтобы увидеть больше...</div>
-        <div style="height: 400px; display: flex; align-items: center; justify-content: center; background: var(--tg-bg); border-radius: 15px; margin-top: 20px;">
-            Тут может быть еще 10-20 пар обуви
-        </div>
+    <div class="header">
+        <div class="app-logo"><span>₿</span> Satoshi DCA</div>
+        <div class="btc-price">BTC: $69,420 <span class="price-up">▲ 1.2%</span></div>
     </div>
 
-    <script>
-        let tg = window.Telegram.WebApp;
-        tg.expand();
+    <div class="card">
+        <div class="card-title">Твой Портфель</div>
+        <div class="portfolio-summary">
+            <div class="total-btc">0.0072 ₿</div>
+            <div class="total-usdt">≈ $500</div>
+        </div>
         
-        let selectedData = { item: '', size: '' };
+        <div class="pseudo-chart">
+            <div class="chart-point"></div>
+        </div>
 
-        // Логика выбора размера и товара
-        document.querySelectorAll('.size-badge').forEach(badge => {
-            badge.addEventListener('click', (e) => {
-                e.stopPropagation(); // Чтобы не срабатывал клик по всей карточке
-                
-                // Снимаем выделение со ВСЕХ значков в приложении
-                document.querySelectorAll('.size-badge').forEach(b => b.classList.remove('selected'));
-                badge.classList.add('selected');
-                
-                // Находим название товара в этой карточке
-                const card = badge.closest('.product-card');
-                const title = card.querySelector('.fw-bold').innerText;
-                
-                selectedData.item = title;
-                selectedData.size = badge.innerText;
-
-                // Показываем главную кнопку Telegram внизу
-                tg.MainButton.text = `Заказать ${title} (Размер: ${badge.innerText})`;
-                tg.MainButton.show();
-            });
-        });
-
-        // Отправка данных боту при нажатии на кнопку внизу
-        tg.onEvent('mainButtonClicked', function(){
-            tg.sendData(JSON.stringify(selectedData));
-        });
-
-        // 1. Ссылка на ваш список товаров (JSON на GitHub или другом сервере)
-const DATA_URL = "https://your-username.github.io/MySneakerShop/products.json";
-
-// 2. Функция, которая загружает товары
-async function loadProducts() {
-    const response = await fetch(DATA_URL);
-    const products = await response.json();
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-val">$450</div>
+                <div class="stat-lab">Вложено всего</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-val profit">+$50 (11%)</div>
+                <div class="stat-lab">Прибыль</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-val">$62,500</div>
+                <div class="stat-lab">Ср. цена покупки</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-val">9</div>
+                <div class="stat-lab">Всего покупок</div>
+            </div>
+        </div>
+    </div>
     
-    const container = document.getElementById('products-container');
-    container.innerHTML = ''; // Очищаем старое
+    <div class="card">
+        <div class="card-title">План Покупок</div>
+        
+        <div class="form-group">
+            <label for="amount">Сумма покупки (USDT)</label>
+            <input type="number" id="amount" value="50" placeholder="50">
+        </div>
 
-    products.forEach(p => {
-        // Если товара нет в наличии, мы его либо не показываем, либо пишем "Нет в наличии"
-        if (p.available) {
-            container.innerHTML += `
-                <div class="product-card">
-                    <img src="${p.image}">
-                    <h3>${p.name}</h3>
-                    <p>${p.price}$</p>
-                    <button onclick="buy('${p.name}')">Заказать</button>
+        <div class="form-group">
+            <label for="frequency">Периодичность</label>
+            <select id="frequency">
+                <option>Каждый день (в 12:00)</option>
+                <option selected>Раз в неделю (Пятница)</option>
+                <option>Раз в месяц (1-е число)</option>
+            </select>
+        </div>
+
+        <div class="plan-info">Текущий план: $50 каждую Пятницу. Ближайшая покупка: 29 марта.</div>
+        <button class="btn btn-secondary" style="margin-top: 15px;">Изменить План</button>
+    </div>
+
+    <div class="card">
+        <div class="card-title">История Автопокупок</div>
+        <ul class="history-list">
+            <li class="history-item">
+                <div>
+                    <div class="hist-date">22 Марта, 12:01</div>
+                    <div class="hist-meta">Курс: $65,100</div>
                 </div>
-            `;
-        }
-    });
+                <div class="hist-amount">
+                    <div class="hist-btc">+0.000768 ₿</div>
+                    <div class="hist-meta">на 50 USDT</div>
+                </div>
+            </li>
+            <li class="history-item">
+                <div>
+                    <div class="hist-date">15 Марта, 12:00</div>
+                    <div class="hist-meta">Курс: $68,300</div>
+                </div>
+                <div class="hist-amount">
+                    <div class="hist-btc">+0.000732 ₿</div>
+                    <div class="hist-meta">на 50 USDT</div>
+                </div>
+            </li>
+            <li class="history-item">
+                <div>
+                    <div class="hist-date">8 Марта, 12:03</div>
+                    <div class="hist-meta">Курс: $62,000</div>
+                </div>
+                <div class="hist-amount">
+                    <div class="hist-btc">+0.000806 ₿</div>
+                    <div class="hist-meta">на 50 USDT</div>
+                </div>
+            </li>
+        </ul>
+        <button class="btn btn-secondary">Показать больше</button>
+    </div>
 
-    // 3. Проверка на Админа
-    let tg = window.Telegram.WebApp;
-    if (tg.initDataUnsafe.user.id === 7738003736) { // Ваш ID
-        document.getElementById('admin-panel').style.display = 'block';
+    <div class="card">
+        <div class="card-title">
+            Подключение Биржи
+            <span class="api-status"><div class="status-dot"></div> Активно</span>
+        </div>
+        <div class="form-group">
+            <label>Биржа</label>
+            <input type="text" value="Bybit" disabled>
+        </div>
+        <div class="form-group">
+            <label>API Ключ (первые символы)</label>
+            <div class="api-key-view" onclick="showToast('Ключ зашифрован. Для смены введите заново.')">
+                ab12...cde34 (Нажмите для инфо)
+            </div>
+        </div>
+        <div class="info-text" style="font-size: 12px; color: var(--text-secondary); text-align: center; line-height: 1.4; margin-top: 15px;">
+            🔒 Ключи хранятся в зашифрованном виде. Бот не имеет прав на вывод средств (Withdrawal Permission).
+        </div>
+    </div>
+
+</div>
+
+<div class="footer-actions">
+    <button class="btn btn-pause" onclick="showToast('Бот приостановлен')">Пауза</button>
+    <button class="btn" onclick="showToast('Настройки сохранены!')">Сохранить</button>
+</div>
+
+<div id="toast">✅ Настройки обновлены</div>
+
+<script>
+    // Инициализация Telegram Web App (чтобы цвет хедера подстроился)
+    window.Telegram.WebApp.ready();
+    window.Telegram.WebApp.expand(); // Расширить на весь экран
+
+    function showToast(message) {
+        var toast = document.getElementById("toast");
+        toast.innerText = message;
+        toast.className = "show";
+        setTimeout(function(){ toast.className = toast.className.replace("show", ""); }, 2500);
     }
-}
+</script>
 
-loadProducts();
-    </script>
 </body>
 </html>
