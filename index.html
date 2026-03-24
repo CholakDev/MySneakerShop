@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Satoshi DCA - Living Charts</title>
+    <title>Satoshi DCA - Premium & Payments</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
@@ -15,54 +15,57 @@
             --card-border: rgba(255, 255, 255, 0.05);
             --text-main: #ffffff;
             --text-secondary: #8a94a1;
-            
-            /* Цвета активов */
             --btc-color: #f7931a;
             --eth-color: #627eea;
             --gold-color: #f1c40f;
-            
-            /* Статусы */
             --green: #00d084;
             --red: #ff4757;
         }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background: var(--bg-gradient);
-            background-attachment: fixed;
-            color: var(--text-main);
+            background: var(--bg-gradient); background-attachment: fixed; color: var(--text-main);
             margin: 0; padding: 0; display: flex; justify-content: center; overflow-y: scroll; 
         }
 
         .app-container { width: 100%; max-width: 420px; padding: 20px 15px 120px 15px; box-sizing: border-box; }
         
-        /* СТИЛЬ КАРТОЧЕК */
         .card { 
-            background: var(--card-bg); 
-            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-            border-radius: 20px; 
-            padding: 20px; margin-bottom: 20px; 
-            border: 1px solid var(--card-border); 
-            box-shadow: 0 8px 32px rgba(0,0,0,0.2); 
-            transition: all 0.3s ease;
+            background: var(--card-bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            border-radius: 20px; padding: 20px; margin-bottom: 20px; 
+            border: 1px solid var(--card-border); box-shadow: 0 8px 32px rgba(0,0,0,0.2); transition: all 0.3s ease;
         }
         
         .card-title { font-size: 13px; text-transform: uppercase; color: var(--text-secondary); margin-top: 0; margin-bottom: 15px; letter-spacing: 1.5px; display: flex; justify-content: space-between; align-items: center; font-weight: 600;}
 
-        /* HEADER */
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding: 0 5px;}
         .app-logo { font-size: 20px; font-weight: 800; display: flex; align-items: center; gap: 8px; transition: color 0.4s ease;}
         .btc-price-header { font-size: 14px; color: var(--text-secondary); text-align: right; }
         #header-price-value { color: var(--text-main); font-weight: bold; font-size: 16px; transition: color 0.5s ease; }
         #header-price-change { font-size: 12px; transition: color 0.5s ease; display: block; margin-top: 2px;}
 
+        /* НЕОНОВЫЙ БАННЕР ПОДПИСКИ */
+        .premium-banner {
+            position: relative; overflow: hidden; border-radius: 18px; padding: 18px;
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;
+            cursor: pointer; transition: 0.3s; background: rgba(20, 23, 28, 0.8); border: 1px solid rgba(255,255,255,0.1);
+        }
+        .premium-banner::before {
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: linear-gradient(60deg, rgba(168,85,247,0.1), rgba(0,208,132,0.1), rgba(247,147,26,0.1), rgba(168,85,247,0.1));
+            background-size: 300% 300%; animation: moveGradient 6s linear infinite; z-index: -1;
+        }
+        @keyframes moveGradient { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        .premium-banner:active { transform: scale(0.98); }
+        .premium-text-main { font-weight: 800; background: linear-gradient(90deg, #a855f7, #ff9ff3); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 17px; margin-bottom: 4px;}
+        .premium-text-sub { font-size: 12px; color: #b2bec3; }
+        .premium-btn { background: rgba(168, 85, 247, 0.2); color: #e056fd; border: 1px solid rgba(168, 85, 247, 0.4); padding: 8px 16px; border-radius: 10px; font-weight: bold; font-size: 13px;}
+
         /* ВЫБОР АКТИВА */
         .asset-selector { margin-bottom: 20px; position: relative; }
         .asset-select-ui { 
-            width: 100%; padding: 15px; background: rgba(0,0,0,0.2); 
-            border: 1px solid var(--card-border); border-radius: 14px; 
-            color: var(--text-main); font-size: 16px; font-weight: 600;
-            appearance: none; outline: none; cursor: pointer; transition: 0.3s;
+            width: 100%; padding: 15px; background: rgba(0,0,0,0.2); border: 1px solid var(--card-border); border-radius: 14px; 
+            color: var(--text-main); font-size: 16px; font-weight: 600; appearance: none; outline: none; cursor: pointer; transition: 0.3s;
         }
         .select-arrow { position: absolute; right: 15px; top: 18px; color: var(--text-secondary); pointer-events: none; font-size: 12px;}
 
@@ -71,8 +74,6 @@
         .total-crypto { font-size: 32px; font-weight: 800; margin-bottom: 5px; transition: color 0.4s ease;}
         .total-usdt-label { font-size: 16px; color: var(--text-secondary); }
         #total-usdt-value { font-weight: bold; color: var(--text-main); transition: color 0.5s ease; }
-
-        /* КОНТЕЙНЕР ДЛЯ НАСТОЯЩЕГО ГРАФИКА */
         .chart-container { height: 120px; margin-top: 20px; position: relative; width: 100%;}
         
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 25px; }
@@ -80,7 +81,6 @@
         .stat-val { font-size: 18px; font-weight: 700; transition: color 0.5s ease; }
         .stat-lab { font-size: 12px; color: var(--text-secondary); margin-top: 6px; }
 
-        /* НАСТРОЙКИ & ИСТОРИЯ & API */
         .form-group { margin-bottom: 15px; }
         label { display: block; margin-bottom: 8px; font-size: 13px; color: var(--text-secondary); padding-left: 4px;}
         input, select { width: 100%; padding: 15px; background: rgba(0,0,0,0.15); border: 1px solid var(--card-border); border-radius: 14px; color: var(--text-main); font-size: 16px; box-sizing: border-box; outline: none; transition: 0.3s;}
@@ -96,12 +96,27 @@
         .status-dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; box-shadow: 0 0 8px var(--green);}
         .api-key-view { font-family: monospace; font-size: 13px; color: var(--text-secondary); background: rgba(0,0,0,0.3); padding: 12px; border-radius: 12px; word-break: break-all; cursor: pointer; text-align: center; border: 1px dashed rgba(255,255,255,0.1);}
 
-        /* КНОПКИ & FOOTER */
         .btn { width: 100%; padding: 16px; color: #000; border: none; border-radius: 16px; font-size: 16px; font-weight: 800; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 15px rgba(0,0,0,0.3);}
-        
         .footer-actions { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(20, 23, 28, 0.85); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); padding: 15px 20px 25px 20px; border-top: 1px solid var(--card-border); box-sizing: border-box; display: flex; gap: 12px; z-index: 100; }
         .footer-actions .btn { width: auto; flex-grow: 1; padding: 16px; }
         .btn-pause { background: rgba(255, 71, 87, 0.1); color: var(--red); border: 1px solid rgba(255, 71, 87, 0.2); box-shadow: none;}
+
+        /* МОДАЛКА */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(5px); display: flex; justify-content: center; align-items: flex-end; z-index: 2000; opacity: 0; visibility: hidden; transition: 0.3s; }
+        .modal-overlay.active { opacity: 1; visibility: visible; }
+        .payment-modal { background: #1c1f26; width: 100%; max-width: 420px; border-radius: 28px 28px 0 0; padding: 30px 20px 40px 20px; box-sizing: border-box; border-top: 1px solid rgba(168, 85, 247, 0.4); box-shadow: 0 -10px 40px rgba(168, 85, 247, 0.15); transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .modal-overlay.active .payment-modal { transform: translateY(0); }
+        .modal-header { text-align: center; margin-bottom: 25px; }
+        .modal-title { font-size: 24px; font-weight: 800; margin-bottom: 5px; background: linear-gradient(90deg, #a855f7, #ff9ff3); -webkit-background-clip: text; -webkit-text-fill-color: transparent;}
+        .modal-price { font-size: 34px; font-weight: 900; color: #fff; margin: 15px 0;}
+        .feature-list { list-style: none; padding: 0; margin: 0 0 25px 0; background: rgba(255,255,255,0.03); border-radius: 16px; padding: 15px;}
+        .feature-item { font-size: 14px; color: #dfe6e9; margin-bottom: 12px; display: flex; align-items: center; gap: 10px;}
+        .feature-item:last-child { margin-bottom: 0; }
+        .feature-check { color: #a855f7; font-weight: bold; font-size: 16px;}
+        .pay-btn { background: #a855f7; color: #fff; width: 100%; padding: 18px; border-radius: 16px; border: none; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s;}
+        .pay-btn:active { transform: scale(0.98); }
+        .pay-crypto-btn { background: transparent; color: var(--text-secondary); border: 1px solid var(--card-border); margin-top: 10px;}
+        .close-modal { position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.1); border: none; color: #fff; width: 32px; height: 32px; border-radius: 50%; font-size: 18px; cursor: pointer;}
 
         #loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0d1117; display: flex; justify-content: center; align-items: center; z-index: 1000; transition: opacity 0.6s ease; }
         .spinner { border: 4px solid rgba(255,255,255,0.05); border-left-color: var(--btc-color); border-radius: 50%; width: 44px; height: 44px; animation: spin 1s linear infinite; }
@@ -120,6 +135,14 @@
             <span id="header-price-value">$---</span>
             <span id="header-price-change">...</span>
         </div>
+    </div>
+
+    <div class="premium-banner" onclick="openPaymentModal()">
+        <div>
+            <div class="premium-text-main">Satoshi PRO ⚡️</div>
+            <div class="premium-text-sub">Доступ ко всем биржам и AI</div>
+        </div>
+        <button class="premium-btn">Upgrade</button>
     </div>
 
     <div class="asset-selector">
@@ -195,181 +218,143 @@
     <button class="btn" id="main-btn">Сохранить</button>
 </div>
 
+<div class="modal-overlay" id="paymentModal">
+    <div class="payment-modal">
+        <button class="close-modal" onclick="closePaymentModal()">×</button>
+        <div class="modal-header">
+            <div class="modal-title">Satoshi PRO</div>
+            <div class="modal-price">10 USDT <span style="font-size: 16px; color: var(--text-secondary); font-weight: normal;">/ мес</span></div>
+        </div>
+        
+        <ul class="feature-list">
+            <li class="feature-item"><span class="feature-check">✦</span> Покупки без скрытых комиссий</li>
+            <li class="feature-item"><span class="feature-check">✦</span> Мульти-активы (ETH, Золото)</li>
+            <li class="feature-item"><span class="feature-check">✦</span> Умный планировщик сделок</li>
+        </ul>
+
+        <button class="pay-btn" onclick="processRealPayment(this, 'stars')">Оплатить (Telegram Stars)</button>
+        <button class="pay-btn pay-crypto-btn" onclick="processRealPayment(this, 'crypto')">Оплатить через Crypto Pay</button>
+    </div>
+</div>
+
 <script>
     window.Telegram.WebApp.ready(); window.Telegram.WebApp.expand();
 
     // БАЗА ДАННЫХ АКТИВОВ (Фейковые данные для портфеля и ГРАФИКА)
     const portfolioData = {
         BTC: { symbol: 'BTCUSDT', icon: '₿', name: 'Satoshi DCA', color: 'var(--btc-color)', owned: 0.0072, invested: 450, avgPrice: 62500, histArr: ['+0.000768 BTC', '+0.000732 BTC', '+0.000806 BTC'], histPrices: ['Курс: $65,100', 'Курс: $68,300', 'Курс: $62,000'],
-               // История баланса USDT (8 точек, как будто 8 недель DCA)
                chartData: [50, 105, 145, 210, 260, 330, 450, 500] 
         },
         ETH: { symbol: 'ETHUSDT', icon: 'Ξ', name: 'Vitalik DCA', color: 'var(--eth-color)', owned: 0.15, invested: 300, avgPrice: 3200, histArr: ['+0.015 ETH', '+0.014 ETH', '+0.018 ETH'], histPrices: ['Курс: $3,450', 'Курс: $3,600', 'Курс: $3,100'],
-               chartData: [50, 102, 138, 195, 240, 310, 300, 310] // Недавний пролив ETH
+               chartData: [50, 102, 138, 195, 240, 310, 300, 310] 
         },
         PAXG: { symbol: 'PAXGUSDT', icon: '🥇', name: 'Gold DCA', color: 'var(--gold-color)', owned: 0.04, invested: 80, avgPrice: 2100, histArr: ['+0.023 PAXG', '+0.008 PAXG', '+0.009 PAXG'], histPrices: ['Курс: $2,180', 'Курс: $2,150', 'Курс: $2,090'],
-               chartData: [50, 101, 153, 204, 255, 306, 306, 320] // Стабильный рост PAXG
+               chartData: [50, 101, 153, 204, 255, 306, 306, 320] 
         }
     };
 
     let currentAsset = 'BTC';
     let lastPrice = 0;
     let isFirstLoad = true;
-    let balanceChart; // Глобальная переменная для графика
+    let balanceChart;
 
-    // Настройка графика Chart.js
     function initChart() {
         const ctx = document.getElementById('balanceChart').getContext('2d');
         const assetColor = getComputedStyle(document.documentElement).getPropertyValue('--btc-color').trim();
-
-        // Градиент заливки под линией
         const fillGradient = ctx.createLinearGradient(0, 0, 0, 120);
-        fillGradient.addColorStop(0, assetColor + '30'); // Полупрозрачный цвет монеты
-        fillGradient.addColorStop(1, assetColor + '00'); // Уходит в прозрачность
-
-        const config = {
-            type: 'line',
-            data: {
-                labels: ['1', '2', '3', '4', '5', '6', '7', '8'], // Weeks / Purchases
-                datasets: [{
-                    data: portfolioData['BTC'].chartData,
-                    borderColor: assetColor,
-                    backgroundColor: fillGradient,
-                    borderWidth: 3,
-                    pointRadius: 0, // Прячем точки в обычном состоянии
-                    pointHitRadius: 10, // Чтобы удобно было тапать
-                    pointBackgroundColor: assetColor,
-                    tension: 0.4, // Плавность линии
-                    fill: true // Заливка
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false }, tooltip: { enabled: true, mode: 'index', intersect: false, callbacks: { label: (ctx) => ` $${ctx.raw}` } } },
-                scales: {
-                    x: { display: true, grid: { display: false }, ticks: { display: false } },
-                    y: { display: false, grid: { display: false }, beginAtZero: false, min: 0 }
-                },
-                animations: {
-                    x: { duration: 0 }, // X не анимируем
-                    y: { duration: 500, easing: 'easeInOutQuart' }, // Y анимируем плавно
-                    borderColor: { duration: 300 } // Цвет анимируем быстро
-                }
-            }
-        };
-
+        fillGradient.addColorStop(0, assetColor + '30'); fillGradient.addColorStop(1, assetColor + '00');
+        const config = { type: 'line', data: { labels: ['1', '2', '3', '4', '5', '6', '7', '8'], datasets: [{ data: portfolioData['BTC'].chartData, borderColor: assetColor, backgroundColor: fillGradient, borderWidth: 3, pointRadius: 0, pointHitRadius: 10, pointBackgroundColor: assetColor, tension: 0.4, fill: true }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { enabled: true, mode: 'index', intersect: false, callbacks: { label: (ctx) => ` $${ctx.raw}` } } }, scales: { x: { display: true, grid: { display: false }, ticks: { display: false } }, y: { display: false, grid: { display: false }, beginAtZero: false, min: 0 } }, animations: { x: { duration: 0 }, y: { duration: 500, easing: 'easeInOutQuart' }, borderColor: { duration: 300 } } } };
         balanceChart = new Chart(ctx, config);
     }
 
-    // Изменение актива (Перерисовка всего + ГРАФИКА)
     function changeAsset() {
-        currentAsset = document.getElementById('asset-selector').value;
-        const data = portfolioData[currentAsset];
-        lastPrice = 0; 
-        
-        // Получаем цвет в реальном времени
+        currentAsset = document.getElementById('asset-selector').value; const data = portfolioData[currentAsset]; lastPrice = 0; 
         const rawColor = getComputedStyle(document.documentElement).getPropertyValue(currentAsset === 'BTC' ? '--btc-color' : (currentAsset === 'ETH' ? '--eth-color' : '--gold-color')).trim();
-
-        // 1. Обновляем визуал интерфейса (как в прошлом коде)
-        document.getElementById('app-icon').innerText = data.icon;
-        document.getElementById('app-name').innerText = data.name;
-        document.getElementById('app-logo').style.color = data.color;
-        document.getElementById('asset-badge').innerText = currentAsset;
-        document.getElementById('total-crypto-amount').innerText = `${data.owned} ${currentAsset}`;
-        document.getElementById('total-crypto-amount').style.color = data.color;
-        document.getElementById('stat-invested').innerText = `$${data.invested}`;
-        document.getElementById('stat-avg-price').innerText = `$${data.avgPrice.toLocaleString()}`;
-        document.getElementById('main-btn').style.backgroundColor = data.color;
-        document.getElementById('main-spinner').style.borderLeftColor = data.color;
-        
-        for(let i=1; i<=3; i++) {
-            const elAmt = document.getElementById(`hist-amt-${i}`);
-            elAmt.innerText = data.histArr[i-1];
-            elAmt.style.color = data.color;
-            document.getElementById(`hist-price-${i}`).innerText = data.histPrices[i-1];
-        }
-
-        // 2. ОБНОВЛЯЕМ ДАННЫЕ И СТИЛИ ГРАФИКА (Самое важное!)
-        if(balanceChart) {
-            // Новый градиент под новый цвет
-            const ctx = document.getElementById('balanceChart').getContext('2d');
-            const newFillGradient = ctx.createLinearGradient(0, 0, 0, 120);
-            newFillGradient.addColorStop(0, rawColor + '30');
-            newFillGradient.addColorStop(1, rawColor + '00');
-
-            // Обновляем датасет
-            balanceChart.data.datasets[0].data = data.chartData;
-            balanceChart.data.datasets[0].borderColor = rawColor;
-            balanceChart.data.datasets[0].pointBackgroundColor = rawColor;
-            balanceChart.data.datasets[0].backgroundColor = newFillGradient;
-            
-            balanceChart.update(); // Запускаем плавную перерисовку
-        }
-
+        document.getElementById('app-icon').innerText = data.icon; document.getElementById('app-name').innerText = data.name; document.getElementById('app-logo').style.color = data.color; document.getElementById('asset-badge').innerText = currentAsset; document.getElementById('total-crypto-amount').innerText = `${data.owned} ${currentAsset}`; document.getElementById('total-crypto-amount').style.color = data.color; document.getElementById('stat-invested').innerText = `$${data.invested}`; document.getElementById('stat-avg-price').innerText = `$${data.avgPrice.toLocaleString()}`; document.getElementById('main-btn').style.backgroundColor = data.color; document.getElementById('main-spinner').style.borderLeftColor = data.color;
+        for(let i=1; i<=3; i++) { const elAmt = document.getElementById(`hist-amt-${i}`); elAmt.innerText = data.histArr[i-1]; elAmt.style.color = data.color; document.getElementById(`hist-price-${i}`).innerText = data.histPrices[i-1]; }
+        if(balanceChart) { const ctx = document.getElementById('balanceChart').getContext('2d'); const newFillGradient = ctx.createLinearGradient(0, 0, 0, 120); newFillGradient.addColorStop(0, rawColor + '30'); newFillGradient.addColorStop(1, rawColor + '00'); balanceChart.data.datasets[0].data = data.chartData; balanceChart.data.datasets[0].borderColor = rawColor; balanceChart.data.datasets[0].pointBackgroundColor = rawColor; balanceChart.data.datasets[0].backgroundColor = newFillGradient; balanceChart.update(); }
         fetchPrice();
     }
 
-    // Подтягивание живой цены
     async function fetchPrice() {
         try {
-            const symbol = portfolioData[currentAsset].symbol;
-            const response = await fetch(`https://api.binance.com/api/v3/ticker/24hr?symbol=${symbol}`);
-            const data = await response.json();
-            
-            updateUi(parseFloat(data.lastPrice), parseFloat(data.priceChangePercent));
-            
-            if (isFirstLoad) {
-                const overlay = document.getElementById('loading-overlay');
-                overlay.style.opacity = '0';
-                setTimeout(() => overlay.style.display = 'none', 600);
-                isFirstLoad = false;
-                initChart(); // Инициализация графика при первой загрузке
-                
-                // Цвета истории при старте
-                for(let i=1; i<=3; i++) document.getElementById(`hist-amt-${i}`).style.color = portfolioData['BTC'].color;
-            }
+            const symbol = portfolioData[currentAsset].symbol; const response = await fetch(`https://api.binance.com/api/v3/ticker/24hr?symbol=${symbol}`); const data = await response.json(); updateUi(parseFloat(data.lastPrice), parseFloat(data.priceChangePercent));
+            if (isFirstLoad) { const overlay = document.getElementById('loading-overlay'); overlay.style.opacity = '0'; setTimeout(() => overlay.style.display = 'none', 600); isFirstLoad = false; initChart(); for(let i=1; i<=3; i++) document.getElementById(`hist-amt-${i}`).style.color = portfolioData['BTC'].color; }
         } catch (error) { console.error('Ошибка:', error); }
     }
 
-    // Пересчет дашборда
     function updateUi(price, changePercent) {
-        const data = portfolioData[currentAsset];
-        const priceValueEl = document.getElementById('header-price-value');
-        const priceChangeEl = document.getElementById('header-price-change');
-        
+        const data = portfolioData[currentAsset]; const priceValueEl = document.getElementById('header-price-value'); const priceChangeEl = document.getElementById('header-price-change');
         priceValueEl.innerText = price.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: currentAsset === 'PAXG' ? 2 : 0 });
-        
-        if (lastPrice > 0) {
-            if (price > lastPrice) { priceValueEl.style.color = 'var(--green)'; setTimeout(() => priceValueEl.style.color = 'var(--text-main)', 1000); } 
-            else if (price < lastPrice) { priceValueEl.style.color = 'var(--red)'; setTimeout(() => priceValueEl.style.color = 'var(--text-main)', 1000); }
-        }
-        lastPrice = price;
-
-        const isUp = changePercent >= 0;
-        priceChangeEl.innerText = (isUp ? '▲ ' : '▼ ') + changePercent.toFixed(2) + '%';
-        priceChangeEl.style.color = isUp ? 'var(--green)' : 'var(--red)';
-
-        const currentPortfolioValueUsdt = data.owned * price;
-        document.getElementById('total-usdt-value').innerText = currentPortfolioValueUsdt.toLocaleString('en-US', { maximumFractionDigits: 0 });
-
-        const profitUsdt = currentPortfolioValueUsdt - data.invested;
-        const profitPercent = (profitUsdt / data.invested) * 100;
-        const sign = profitUsdt >= 0 ? '+' : '';
-        const profitEl = document.getElementById('portfolio-profit');
-        const profitBox = document.getElementById('profit-box');
-        
+        if (lastPrice > 0) { if (price > lastPrice) { priceValueEl.style.color = 'var(--green)'; setTimeout(() => priceValueEl.style.color = 'var(--text-main)', 1000); } else if (price < lastPrice) { priceValueEl.style.color = 'var(--red)'; setTimeout(() => priceValueEl.style.color = 'var(--text-main)', 1000); } }
+        lastPrice = price; const isUp = changePercent >= 0; priceChangeEl.innerText = (isUp ? '▲ ' : '▼ ') + changePercent.toFixed(2) + '%'; priceChangeEl.style.color = isUp ? 'var(--green)' : 'var(--red)';
+        const currentPortfolioValueUsdt = data.owned * price; document.getElementById('total-usdt-value').innerText = currentPortfolioValueUsdt.toLocaleString('en-US', { maximumFractionDigits: 0 });
+        const profitUsdt = currentPortfolioValueUsdt - data.invested; const profitPercent = (profitUsdt / data.invested) * 100; const sign = profitUsdt >= 0 ? '+' : ''; const profitEl = document.getElementById('portfolio-profit'); const profitBox = document.getElementById('profit-box');
         profitEl.innerText = `${sign}$${Math.abs(profitUsdt).toFixed(0)} (${sign}${profitPercent.toFixed(1)}%)`;
-        
-        if (profitUsdt >= 0) {
-            profitEl.style.color = 'var(--green)'; profitBox.style.borderColor = 'rgba(0, 208, 132, 0.3)';
-        } else {
-            profitEl.style.color = 'var(--red)'; profitBox.style.borderColor = 'rgba(255, 71, 87, 0.3)';
+        if (profitUsdt >= 0) { profitEl.style.color = 'var(--green)'; profitBox.style.borderColor = 'rgba(0, 208, 132, 0.3)'; } else { profitEl.style.color = 'var(--red)'; profitBox.style.borderColor = 'rgba(255, 71, 87, 0.3)'; }
+    }
+
+    // ==========================================
+    // БЛОК РЕАЛЬНОЙ ОПЛАТЫ 
+    // ==========================================
+    
+    function openPaymentModal() { document.getElementById('paymentModal').classList.add('active'); }
+    function closePaymentModal() { document.getElementById('paymentModal').classList.remove('active'); }
+
+    async function processRealPayment(button, method) {
+        if (method !== 'crypto') {
+            alert('Пока тестируем только Crypto Pay!');
+            return;
+        }
+
+        const originalText = button.innerHTML;
+        button.innerHTML = "⏳ Создаем крипто-счет...";
+        button.style.opacity = "0.7";
+        button.disabled = true;
+
+        try {
+            // Стучимся на наш локальный Java-сервер!
+            const response = await fetch('http://localhost:8080/api/create-invoice', {
+                method: 'POST'
+            });
+
+            if (!response.ok) throw new Error('Сервер ответил ошибкой');
+
+            const data = await response.json();
+
+            // CryptoBot присылает ответ, внутри которого лежит готовая ссылка (pay_url)
+            if (data.ok && data.result && data.result.pay_url) {
+                button.innerHTML = "✅ Счет готов!";
+                button.style.background = "var(--green)";
+                button.style.borderColor = "var(--green)";
+                button.style.opacity = "1";
+                
+                // Открываем ссылку на оплату в новой вкладке
+                setTimeout(() => {
+                    window.open(data.result.pay_url, '_blank');
+                    button.innerHTML = originalText;
+                    button.style = "";
+                    button.disabled = false;
+                }, 1000);
+
+            } else {
+                alert('Счет не создан. Проверь, правильный ли API-токен вставлен в Java!');
+                console.log("Ответ от бота:", data);
+                button.innerHTML = originalText;
+                button.style = "";
+                button.disabled = false;
+            }
+
+        } catch (error) {
+            console.error('Ошибка связи с Java-сервером:', error);
+            alert('Не удалось связаться с сервером. Он точно запущен?');
+            button.innerHTML = originalText;
+            button.style = "";
+            button.disabled = false;
         }
     }
 
-    fetchPrice();
-    setInterval(fetchPrice, 5000);
+    fetchPrice(); setInterval(fetchPrice, 5000);
 </script>
 
 </body>
